@@ -1,0 +1,36 @@
+{
+    "ver": "0.1",
+    "downloadPath": "C:\\temp\\epictemp",
+    "apps": {
+        "255710": {
+            "name": "Cities: Skylines",
+            "mods": {
+                "1637663252": {
+                    "name": "TM:PE 11.6.4.8 STABLE (Traffic Manager: President Edition)",
+                    "date": "10 Feb @ 11:40am",
+                    "requirements": {
+                        "2040656402": "Harmony 2.2-0 (Mod Dependency)"
+                    }
+                },
+                "2040656402": {
+                    "name": "Harmony 2.2-0 (Mod Dependency)",
+                    "date": "7 Feb @ 7:06pm",
+                    "requirements": {}
+                },
+                "1625704117": {
+                    "name": "Roundabout Builder",
+                    "date": "29 Jan @ 1:52am",
+                    "requirements": {}
+                },
+                "1619685021": {
+                    "name": "Move It",
+                    "date": "6 Jan @ 11:10am",
+                    "requirements": {}
+                }
+            }
+        }
+    },
+    "paths": {
+        "255710": "E:\\Epic\\CitiesSkylines\\Files\\Mods"
+    }
+}
