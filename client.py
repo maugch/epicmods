@@ -66,12 +66,15 @@ class ModChecker:
                     print('Old version: mod {} {} date: n:{} o:{}'.format(modId,newMod['name'],newMod['date'],mod['date']))
 
         if len(result) > 0:
-            print("please download the following mods from https://steamworkshopdownloader.io/ and copy them in your download dir: {}".format(self.config.getDownloadPath()))
-            if not automatic:
-                print("restart with the option -i.")
-            for r in result:
-                print('{}{}'.format(self._downlod_url,r))
-            print()
+            self.askForDownload(result,automatic)
+            
+    def askForDownload(self,result,automatic=False):
+        print("please download the following mods from https://steamworkshopdownloader.io/ and copy them in your download dir: {}".format(self.config.getDownloadPath()))
+        if not automatic:
+            print("restart with the option -i.")
+        for r in result:
+            print('{}{}'.format(self._downlod_url,r))
+        print()
 
     def addMod(self,url):
         modId = url.partition('id=')[2].partition('&')[0]
@@ -89,6 +92,8 @@ class ModChecker:
 
         if not self.config.appHasPath(appId):
             self.setAppPath(appId,appName)
+
+        self.askForDownload([modId])
 
     def installUpdates(self):
         print('Installing updates...')
