@@ -10,10 +10,10 @@ from workshopcrawler import WorkshopCrawler
 
 class ModChecker:
 
-    def __init__(self):
+    def __init__(self,config_filename='config.json'):
         self._downlod_url = 'https://steamcommunity.com/sharedfiles/filedetails/?id='
         self.wscrawler = WorkshopCrawler()
-        self._configFile = 'config.json'
+        self._configFile = config_filename
 
         self.config = EpicConfig(self._configFile)
         self.config.load()
@@ -33,7 +33,7 @@ class ModChecker:
             return False
     
     def setDownloadPath(self):
-        print('Please set a temporary directory where your zip will be located:')
+        print('Please set a temporary directory where your will store temporarily your zip files.')
         p = input()
         self.config.setDownloadPath(p)
 
@@ -45,11 +45,15 @@ class ModChecker:
         else:
             print('invalid path.')
 
-    def checkUpdatesOnline(self):
+    def checkUpdatesOnline(self,automatic = False):
         ''' checks for updates online. Doesn't save.'''
         print("Checking for updates online...")
         result = []
-        for appId in self.config.getAppsIds():
+        appIDs= self.config.getAppsIds()
+        if not appIDs:
+            print('No game configured. Please add a Mod first. It will add a game automatically.')
+            return
+        for appId in appIDs:
             appName = self.config.getAppName(appId)
             print('Checking {} : {}'.format(appId,appName))
             for modId,mod in self.config.getAppMods(appId).items():
@@ -63,7 +67,8 @@ class ModChecker:
 
         if len(result) > 0:
             print("please download the following mods from https://steamworkshopdownloader.io/ and copy them in your download dir: {}".format(self.config.getDownloadPath()))
-            print("restart with the option -i.")
+            if not automatic:
+                print("restart with the option -i.")
             for r in result:
                 print('{}{}'.format(self._downlod_url,r))
             print()
@@ -78,7 +83,8 @@ class ModChecker:
         print('adding mod to known list: {}'.format(modInfo['name']))
         self.config._setModMainData(appId,appName,modId,modInfo)
         for k in modInfo['requirements'].keys():
-            modInfo2,_,_ = self._wscrawler.fetchModInfo(k)
+            modInfo2,_,_ = self.wscrawler.fetchModInfo(k)
+            print('adding mod (required) to known list: {}'.format(modInfo2['name']))
             self.config._setModMainData(appId,appName,k,modInfo2)
 
         if not self.config.appHasPath(appId):
@@ -97,7 +103,7 @@ class ModChecker:
                 if modId in allMods:
                     self._installMod(modId,dlpath,mf)
                 else:
-                    print("{} is not a mod".format(modId))
+                    print("{} is not a mod or is not configured.".format(mf))
         
     def _installMod(self,modId,zipPath,fileName):
         appId = self.config.getAppId(modId)
@@ -132,6 +138,7 @@ class ModChecker:
 def main(argv):
     
     print("Mods checker for Epic games")
+    #mc = ModChecker('test.json')
     mc = ModChecker()
     mc.checkConfiguration()
 
@@ -167,11 +174,21 @@ def main(argv):
             supportedGames()
         elif arg == 'i':
             mc.installUpdates()
+        elif arg == 't':
+            mc.checkUpdatesOnline(automatic=True)
+            print('Copy the resulting zip files in your download directory: {}'.format('xx'))
+            print('Press enter once the file have been copied. If you misspress, you can always restart with just -i')
+            mc.installUpdates()
+            mc.save()
+        elif arg == 'p':
+            mc.setDownloadPath()
+            mc.save()
 
 def supportedGames():
     '''List of supported games'''
     print("Currently tested games:")
     print("Cities: Skylines")
+    print("Help me adding more games!")
 
 def printHelp():
     print("Little app that check on steam workshop if there are updates on mods of configured games.")
@@ -183,6 +200,8 @@ def printHelp():
     print('-a [ID] : add a module')
     print('-u [url] : add a module with the whole url (for the lazy)')
     print("-l : list of supported games")
+    print("-t : check and install updates")
+    print("-p : set download path")
 
 if __name__ == '__main__':
     main(argv)

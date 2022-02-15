@@ -79,12 +79,6 @@ class EpicConfig:
             return self._data['paths'][appId]
         return ''
 
-    '''
-    def getModInfo(self,modId):
-        for appId,app in self._data['apps'].items():
-            if modId in app['mods'].keys():
-                self.getModPath(appId)
-    '''
     def getAppId(self,modId):
         '''get app id from mod id'''
         for appId,app in self._data['apps'].items():
@@ -131,11 +125,17 @@ class EpicConfig:
                 result.append(k)
         return result
 
-    def setPath(self,appId,newPath):
-        if appId not in self._data['paths'].keys():
-            self._data['paths'][appId]= {}
+    def setAppPath(self,appId,newPath):
+        if 'paths' not in self._data.keys():
+            self._data['paths'] = {}
         self._data['paths'][appId] = newPath
             
+    def appHasPath(self,appId):
+        if 'paths' not in self._data.keys():
+            return False
+        if appId in self._data['paths'].keys():
+            return True
+        return False
 
     def getAppName(self,appId):
         if appId in self._data['apps'].keys():
@@ -143,6 +143,8 @@ class EpicConfig:
         return 'unknown?'
 
     def getAppsIds(self):
+        if 'apps' not in self._data.keys():
+            return None
         return self._data['apps'].keys()
 
     def getAppMods(self,appId):
